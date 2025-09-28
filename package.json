@@ -1,0 +1,21 @@
+{
+  "name": "kulturbooking-platform",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @kultur/api dev\" \"pnpm --filter @kultur/web dev\"",
+    "bootstrap": "pnpm install",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/react": "19.1.14",
+    "@types/react-dom": "^19.1.9",
+    "concurrently": "^8.0.0",
+    "prettier": "^2.8.0"
+  }
+}
