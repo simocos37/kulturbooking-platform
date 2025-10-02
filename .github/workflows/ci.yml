@@ -19,8 +19,7 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      # Removed redundant pnpm install step
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -53,8 +52,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-      - name: Install pnpm
-        run: npm install -g pnpm
+      # Removed redundant pnpm install step
       - name: Install deps
         run: pnpm install --frozen-lockfile
       - name: Start API (background)
