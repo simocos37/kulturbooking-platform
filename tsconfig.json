@@ -11,5 +11,5 @@
     "noEmit": true,
     "strict": false
   },
-  "include": ["apps/**/*", "packages/**/*"]
+  "include": ["apps/**/*", "packages/**/*", "node_modules/@prisma/client"]
 }
