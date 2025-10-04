@@ -27,6 +27,5 @@
     "prisma": "^6.16.2",
     "typescript": "^5.9.2"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

@@ -20,8 +20,8 @@ export default function mapPostRouter(prisma: PrismaClient) {
 
   // POST /api/mappoints
   router.post('/', async (req, res) => {
-  // TODO: Replace 'anon' with authenticated user ID when auth is implemented
-  const { userId = 'anon', lat, lng, text, startsAt, endsAt } = req.body;
+    // TODO: Replace 'anon' with authenticated user ID when auth is implemented
+    const { userId = 'anon', lat, lng, text, startsAt, endsAt } = req.body;
     if (typeof lat !== 'number' || typeof lng !== 'number' || !text) {
       return sendError(res, 400, 'lat (number), lng (number) and text are required');
     }
