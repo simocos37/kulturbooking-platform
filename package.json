@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "dev": "concurrently \"pnpm --filter @kultur/api dev\" \"pnpm --filter @kultur/web dev\"",
+    "build": "pnpm --filter ./... build",
+    "lint": "pnpm --filter ./... lint",
     "bootstrap": "pnpm install",
     "format": "prettier --write ."
   },

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
+import { sendError } from '../utils/errorResponse';
 
 export default function mapPostRouter(prisma: PrismaClient) {
   const router = Router();
@@ -13,15 +14,16 @@ export default function mapPostRouter(prisma: PrismaClient) {
       res.json(posts);
     } catch (err: any) {
       console.error('Error fetching mappoints', err);
-      res.status(500).json({ error: 'Could not fetch map posts' });
+      sendError(res, 500, 'Could not fetch map posts');
     }
   });
 
   // POST /api/mappoints
   router.post('/', async (req, res) => {
-    const { userId = 'anon', lat, lng, text, startsAt, endsAt } = req.body;
+  // TODO: Replace 'anon' with authenticated user ID when auth is implemented
+  const { userId = 'anon', lat, lng, text, startsAt, endsAt } = req.body;
     if (typeof lat !== 'number' || typeof lng !== 'number' || !text) {
-      return res.status(400).json({ error: 'lat (number), lng (number) and text are required' });
+      return sendError(res, 400, 'lat (number), lng (number) and text are required');
     }
     try {
       const mp = await prisma.mapPost.create({
@@ -37,7 +39,7 @@ export default function mapPostRouter(prisma: PrismaClient) {
       res.status(201).json(mp);
     } catch (err: any) {
       console.error('Error creating map post', err);
-      res.status(500).json({ error: 'Could not create map post' });
+      sendError(res, 500, 'Could not create map post');
     }
   });
 

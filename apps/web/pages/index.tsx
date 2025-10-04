@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { fetchEvents, bookEvent } from '../utils/api';
-import Button from '../components/Button';
-import axios from 'axios';
+import EventItem from '../components/EventItem';
+import type { Event } from '@kultur/types';
 
-type EventItem = {
-  id: string;
-  title: string;
-  description: string;
-  startAt: string;
-  lat?: number | null;
-  lng?: number | null;
-};
-
-export default function Home() {
-  const [events, setEvents] = useState<EventItem[]>([]);
+const HomePage: React.FC = () => {
+  const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchEvents()
@@ -22,7 +14,10 @@ export default function Home() {
         setEvents(data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        setError(err.message || 'Failed to load events');
+        setLoading(false);
+      });
   }, []);
 
   return (
@@ -33,28 +28,27 @@ export default function Home() {
       </header>
 
       <main>
-        {loading ? <p>Loading events…</p> : null}
+        {loading && <p>Loading events…</p>}
+        {error && <p className="text-red-500">{error}</p>}
         <ul className="space-y-4">
           {events.map((e) => (
-            <li key={e.id} className="p-4 border rounded-lg shadow-sm">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-xl font-semibold">{e.title}</h2>
-                  <p className="text-sm text-gray-600">{e.description}</p>
-                  <p className="text-xs text-gray-500 mt-2">Starts: {new Date(e.startAt).toLocaleString()}</p>
-                </div>
-                <div>
-                  <Button onClick={() => {
-                    bookEvent(e.id)
-                      .then(() => alert('Booking confirmed (no payment)'))
-                      .catch((err) => alert('Could not book: ' + err.message));
-                  }}>Book</Button>
-                </div>
-              </div>
-            </li>
+            <EventItem
+              key={e.id}
+              event={e}
+              onBook={async (id) => {
+                try {
+                  await bookEvent(id);
+                  alert('Booking confirmed (no payment)');
+                } catch (err: any) {
+                  alert('Could not book: ' + (err?.message || 'Unknown error'));
+                }
+              }}
+            />
           ))}
         </ul>
       </main>
     </div>
   );
-}
+};
+
+export default HomePage;

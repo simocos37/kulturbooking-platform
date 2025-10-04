@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { User, Profile } from '@kultur/types';
+import { sendError } from '../utils/errorResponse';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
@@ -9,12 +11,18 @@ export default function authRouter(prisma: PrismaClient) {
   const router = Router();
 
   // Helper: error response
-  const error = (res: Response, status: number, message: string) => res.status(status).json({ error: message });
+  const error = sendError;
 
   // Helper: token response
   const sendToken = (res: Response, user: any) => {
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: user.id, email: user.email, profile: user.profile } });
+    const userResponse: User = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      profile: user.profile as Profile
+    };
+    res.json({ token, user: userResponse });
   };
 
   // REGISTER

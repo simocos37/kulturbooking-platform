@@ -38,6 +38,14 @@ pnpm dev
 ```
 
 ## 🔗URLs
+
+- **Backend health check:**
+  - `GET http://localhost:4000/health` — Returns `{ status: "ok" }` if the API is running.
+- **Frontend health check:**
+  - `GET http://localhost:3000/health` — Returns `{ status: "ok" }` if the frontend is running (add this route if not present).
+
+Use these endpoints for monitoring, deployment checks, and CI/CD health probes.
+
 API: http://localhost:4000
 
 Web: http://localhost:3000

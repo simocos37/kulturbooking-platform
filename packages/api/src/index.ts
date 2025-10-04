@@ -36,14 +36,16 @@ app.get('/', (_req, res) => {
 
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
-// Routers
-app.use('/api/auth', authRouter(prisma));
-app.use('/api/events', eventsRouter(prisma));
-app.use('/api/bookings', bookingsRouter(prisma));
-app.use('/api/mappoints', mapPostRouter(prisma));
+// API Versioning: All routes are now under /api/v1 for future-proofing
+// To upgrade, add new routers under /api/v2, /api/v3, etc.
+app.use('/api/v1/auth', authRouter(prisma));
+app.use('/api/v1/events', eventsRouter(prisma));
+app.use('/api/v1/bookings', bookingsRouter(prisma));
+app.use('/api/v1/mappoints', mapPostRouter(prisma));
 
 // Simple 404 handler for unknown API routes (helps debugging)
 app.use('/api', (_req, res) => res.status(404).json({ error: 'API route not found' }));
+app.use('/api/v1', (_req, res) => res.status(404).json({ error: 'API v1 route not found' }));
 
 // Generic fallback (optional)
 app.use((_req, res) => res.status(404).json({ error: 'Not Found' }));
