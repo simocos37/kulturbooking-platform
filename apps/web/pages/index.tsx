@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { fetchEvents } from '../utils/api';
 import Button from '../components/Button';
+import axios from 'axios';
 
 type EventItem = {
   id: string;
@@ -16,10 +17,12 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/events').then((res) => {
-      setEvents(res.data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    fetchEvents()
+      .then((data) => {
+        setEvents(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   return (
