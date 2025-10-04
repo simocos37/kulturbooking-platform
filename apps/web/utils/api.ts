@@ -12,3 +12,17 @@ export async function fetchEvents() {
   }
   return res.json();
 }
+
+export async function bookEvent(eventId: string) {
+  const base = API_BASE || '';
+  const res = await fetch(`${base}/api/bookings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ eventId }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Booking failed: ${res.status} ${text}`);
+  }
+  return res.json();
+}

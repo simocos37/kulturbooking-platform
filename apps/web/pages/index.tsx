@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchEvents } from '../utils/api';
+import { fetchEvents, bookEvent } from '../utils/api';
 import Button from '../components/Button';
 import axios from 'axios';
 
@@ -45,7 +45,7 @@ export default function Home() {
                 </div>
                 <div>
                   <Button onClick={() => {
-                    axios.post('http://localhost:4000/api/bookings', { eventId: e.id })
+                    bookEvent(e.id)
                       .then(() => alert('Booking confirmed (no payment)'))
                       .catch((err) => alert('Could not book: ' + err.message));
                   }}>Book</Button>
