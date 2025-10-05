@@ -30,6 +30,9 @@ const HomePage: React.FC = () => {
       <main>
         {loading && <p>Loading events…</p>}
         {error && <p className="text-red-500">{error}</p>}
+        {!loading && !error && events.length === 0 && (
+          <p className="text-gray-500">No events found.</p>
+        )}
         <ul className="space-y-4">
           {events.map((e) => (
             <EventItem
