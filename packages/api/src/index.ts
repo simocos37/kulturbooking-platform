@@ -14,9 +14,18 @@ const prisma = new PrismaClient();
 app.use(bodyParser.json());
 
 // CORS configuration: allow origins defined in env var CORS_ORIGINS (comma-separated).
-// If not provided, default to allow all (*) for staging/dev ease.
+// If not provided, allow '*' ONLY in development. In production, require explicit origins.
 const rawOrigins = process.env.CORS_ORIGINS;
-const corsOrigins = rawOrigins ? rawOrigins.split(',').map(s => s.trim()) : '*';
+const isDev = process.env.NODE_ENV !== 'production';
+let corsOrigins;
+if (rawOrigins) {
+  corsOrigins = rawOrigins.split(',').map(s => s.trim());
+} else if (isDev) {
+  corsOrigins = '*';
+  console.warn('[CORS] Allowing all origins (*) in development. Set CORS_ORIGINS for production!');
+} else {
+  throw new Error('CORS_ORIGINS env var must be set in production for security.');
+}
 app.use(cors({ origin: corsOrigins, credentials: true }));
 
 // Simple root endpoint so visiting the service base URL doesn't return 404
