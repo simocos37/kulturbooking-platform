@@ -1,4 +1,5 @@
 import express from 'express';
+import { setupSwagger } from './swagger';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import authRouter from './routes/auth';
@@ -8,6 +9,7 @@ import mapPostRouter from './routes/mappoints';
 import bodyParser from 'body-parser';
 
 const app = express();
+setupSwagger(app);
 const prisma = new PrismaClient();
 
 app.use(bodyParser.json());

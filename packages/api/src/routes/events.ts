@@ -1,8 +1,28 @@
+import { EventCreateSchema } from '../schemas/event';
 import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
-import { Event } from '@kultur/types';
 import { toEvent } from '../utils/toSharedTypes';
 import { sendError } from '../utils/errorResponse';
+
+/**
+ * @openapi
+ * /api/v1/events:
+ *   post:
+ *     summary: Create an event
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/EventCreate'
+ *     responses:
+ *       200:
+ *         description: Event created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/EventCreate'
+ */
 
 export default function eventsRouter(prisma: PrismaClient) {
   const router = Router();
@@ -18,17 +38,19 @@ export default function eventsRouter(prisma: PrismaClient) {
 
   // POST /api/events  (minimal creation for MVP — normally protected)
   router.post('/', async (req, res) => {
-    const { title, description, startAt, lat, lng } = req.body;
-    if (!title || !startAt) return sendError(res, 400, 'title and startAt required');
-
+    const parseResult = EventCreateSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return sendError(res, 400, 'Invalid event input');
+    }
+    const { title, description, startAt, lat, lng } = parseResult.data;
     try {
       const event = await prisma.event.create({
         data: {
           title,
           description: description || '',
           startAt: new Date(startAt),
-          lat: lat || null,
-          lng: lng || null,
+          lat: lat ?? null,
+          lng: lng ?? null,
           organizerId: 'anon' // TODO: Replace with authenticated user ID when auth is implemented
         }
       });

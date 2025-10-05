@@ -49,3 +49,37 @@ Use these endpoints for monitoring, deployment checks, and CI/CD health probes.
 API: http://localhost:4000
 
 Web: http://localhost:3000
+
+## API Documentation & OpenAPI Integration (Finalized)
+
+This project uses Zod v3 for validation and generates JSON Schema for OpenAPI documentation. The workflow is:
+
+1. **Define schemas** in `packages/api/src/schemas/` using Zod v3.
+2. **Generate JSON Schema** by running:
+   ```sh
+   pnpm generate:jsonschema
+   ```
+   This creates `jsonschemas.json` in the API package, with schemas compatible with Swagger.
+3. **Serve OpenAPI docs** using Swagger UI:
+   - The API server loads `jsonschemas.json` and serves docs at `/api-docs`.
+   - Endpoint documentation is added via JSDoc comments in route files, using `$ref: '#/components/schemas/SchemaName'`.
+
+### Troubleshooting
+- If schemas show as `type: string`, ensure you are using Zod v3 and `zod-to-json-schema@3.x`.
+- All `$ref` pointers in JSDoc must use `#/components/schemas/SchemaName`.
+- Regenerate schemas and restart the server after changes.
+
+### How to View API Docs
+- Start the API server (`pnpm dev` or `pnpm start` in `packages/api`).
+- Visit `http://localhost:4000/api-docs` in your browser.
+
+### How to Export a Static OpenAPI File
+- Use Swagger-jsdoc to output a static OpenAPI file if needed.
+
+### Cleanup
+- All legacy zod-openapi and zod-to-openapi files/scripts have been removed.
+- Only Zod v3, zod-to-json-schema, and Swagger-jsdoc are used for validation and docs.
+
+---
+
+For more details, see `src/swagger.ts` and your route files for endpoint documentation examples.

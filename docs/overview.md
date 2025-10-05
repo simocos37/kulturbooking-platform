@@ -60,3 +60,25 @@ We aim to solve the fragmentation of opportunities by offering a **centralized h
 - See `docs/setup.md` for local setup and environment variables
 - Use `/health` endpoints for deployment checks
 - Use `.env.example` files for required configuration
+
+---
+
+### 🧩 Type Safety & Input Validation
+
+KulturBooking uses two complementary approaches for type safety and validation:
+
+**Shared Types (`@kultur/types`):**
+- Used for compile-time type safety across frontend and backend.
+- Ensures code matches the data model (e.g., Event, Booking, User).
+- Not used for runtime validation—only for TypeScript development and IDE support.
+
+**Zod Schemas:**
+- Used for runtime validation of API inputs (e.g., request bodies).
+- Ensures incoming data matches the expected shape and types, with clear error messages.
+- Used in API routes to validate and parse data before processing.
+- Can infer TypeScript types from schemas for consistency.
+
+**Best Practice:**
+- Use Zod schemas for validating all incoming API data.
+- Use shared types for typing database results, API responses, and shared logic.
+- Remove unused type imports from files that only use Zod for validation.

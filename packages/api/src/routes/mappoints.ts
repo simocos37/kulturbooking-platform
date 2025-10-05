@@ -1,9 +1,30 @@
+import { MapPointCreateSchema } from '../schemas/mappoint';
 import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
 import { sendError } from '../utils/errorResponse';
 
 export default function mapPostRouter(prisma: PrismaClient) {
   const router = Router();
+
+  /**
+   * @openapi
+   * /api/v1/mappoints:
+   *   post:
+   *     summary: Create a map point
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/MapPointCreate'
+   *     responses:
+   *       201:
+   *         description: Map point created
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/MapPointCreate'
+   */
 
   // GET /api/mappoints
   router.get('/', async (_req, res) => {
@@ -20,15 +41,15 @@ export default function mapPostRouter(prisma: PrismaClient) {
 
   // POST /api/mappoints
   router.post('/', async (req, res) => {
-    // TODO: Replace 'anon' with authenticated user ID when auth is implemented
-    const { userId = 'anon', lat, lng, text, startsAt, endsAt } = req.body;
-    if (typeof lat !== 'number' || typeof lng !== 'number' || !text) {
-      return sendError(res, 400, 'lat (number), lng (number) and text are required');
+    const parseResult = MapPointCreateSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return sendError(res, 400, 'Invalid map post input');
     }
+    const { userId, lat, lng, text, startsAt, endsAt } = parseResult.data;
     try {
       const mp = await prisma.mapPost.create({
         data: {
-          userId,
+          userId: userId ?? 'anon',
           lat,
           lng,
           text,

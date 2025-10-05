@@ -1,24 +1,45 @@
+import { BookingCreateSchema } from '../schemas/booking';
 import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
-import { Booking } from '@kultur/types';
 import { toBooking } from '../utils/toSharedTypes';
 import { sendError } from '../utils/errorResponse';
 
 const ADMIN_HEADER = 'x-admin-token';
 
+/**
+ * @openapi
+ * /api/v1/bookings:
+ *   post:
+ *     summary: Create a booking
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/BookingCreate'
+ *     responses:
+ *       200:
+ *         description: Booking created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/BookingCreate'
+ */
 export default function bookingsRouter(prisma: PrismaClient) {
   const router = Router();
 
   // POST /api/bookings - public booking creation (MVP)
   router.post('/', async (req, res) => {
-    const { eventId } = req.body;
-    if (!eventId) return sendError(res, 400, 'eventId required');
-
+    const parseResult = BookingCreateSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return sendError(res, 400, 'Invalid booking input');
+    }
+    const { eventId, userId } = parseResult.data;
     try {
       const booking = await prisma.booking.create({
         data: {
           eventId,
-          userId: 'anon', // TODO: Replace with authenticated user ID when auth is implemented
+          userId: userId ?? 'anon', // TODO: Replace with authenticated user ID when auth is implemented
           status: 'CONFIRMED'
         }
       });
