@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-  "target": "ES2022",
-  "types": ["jest"],
+    "target": "ES2022",
+    "types": [
+      "jest"
+    ],
     "lib": [
       "DOM",
       "DOM.Iterable",
