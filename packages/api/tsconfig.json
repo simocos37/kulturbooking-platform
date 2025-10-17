@@ -9,7 +9,8 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": [
-      "jest"
+      "jest",
+      "node"
     ]
   },
   "include": [

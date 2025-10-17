@@ -1,3 +1,46 @@
+## 🗄️ Production Database (Render PostgreSQL)
+
+For production, KulturBooking uses a managed PostgreSQL instance on Render.
+
+**Connection Info Example:**
+
+```
+Host: dpg-d3ghd0h5pdvs73egtmkg-a
+Port: 5432
+Database: kulturbooking_staging_db
+Username: kulturbooking_staging_db_user
+Password: (see Render dashboard)
+PostgreSQL Version: 16
+```
+
+**Set your `DATABASE_URL` in `.env.production` or Render environment settings:**
+
+```
+DATABASE_URL=postgresql://kulturbooking_staging_db_user:<password>@dpg-d3ghd0h5pdvs73egtmkg-a:5432/kulturbooking_staging_db
+```
+(Replace `<password>` with your actual password)
+
+**Deployment Steps:**
+- Ensure migrations are committed (`prisma/migrations`)
+- On deploy, run:
+  ```sh
+  pnpm prisma:generate
+  pnpm prisma migrate deploy
+  ```
+- The API will use the production database for all operations
+
+**Security:**
+- Never commit your password or full connection string to git
+- Use Render’s environment variable management for secrets
+
+**Notes:**
+- Free instance expires Nov 3, 2025 unless upgraded
+- Storage: 1 GB (currently 6.54% used)
+- Region: Frankfurt (EU Central)
+- Ingress: open to all IPs (`0.0.0.0/0`)
+
+---
+
 # Local Development Setup
 
 This guide explains how to set up KulturBooking locally.
@@ -24,6 +67,7 @@ cd packages/api
 echo "DATABASE_URL=file:./dev.db" > .env
 echo "JWT_SECRET=dev-secret" >> .env
 echo "PORT=4000" >> .env
+echo "CORS_ORIGINS=http://localhost:3000" >> .env # Set allowed origins for CORS
 
 # Generate Prisma client and push schema
 pnpm prisma:generate
@@ -37,32 +81,32 @@ cd ../../
 pnpm dev
 ```
 
-## 🔗URLs
+
+## 🩺 Health & Monitoring Endpoints
 
 - **Backend health check:**
   - `GET http://localhost:4000/health` — Returns `{ status: "ok" }` if the API is running.
+- **Internal DB status:**
+  - `GET http://localhost:4000/api/internal/db-status` — Returns DB stats (admin only, requires `x-admin-token` header).
 - **Frontend health check:**
   - `GET http://localhost:3000/health` — Returns `{ status: "ok" }` if the frontend is running (add this route if not present).
 
-Use these endpoints for monitoring, deployment checks, and CI/CD health probes.
-
 API: http://localhost:4000
-
 Web: http://localhost:3000
 
-## API Documentation & OpenAPI Integration (Finalized)
 
-This project uses Zod v3 for validation and generates JSON Schema for OpenAPI documentation. The workflow is:
+## API Documentation & OpenAPI Integration
 
+This project uses Zod v3 for validation and generates JSON Schema for OpenAPI docs. The workflow:
 1. **Define schemas** in `packages/api/src/schemas/` using Zod v3.
 2. **Generate JSON Schema** by running:
-   ```sh
-   pnpm generate:jsonschema
-   ```
-   This creates `jsonschemas.json` in the API package, with schemas compatible with Swagger.
+  ```sh
+  pnpm generate:jsonschema
+  ```
+  This creates `jsonschemas.json` in the API package, compatible with Swagger.
 3. **Serve OpenAPI docs** using Swagger UI:
-   - The API server loads `jsonschemas.json` and serves docs at `/api-docs`.
-   - Endpoint documentation is added via JSDoc comments in route files, using `$ref: '#/components/schemas/SchemaName'`.
+  - The API server loads `jsonschemas.json` and serves docs at `/api-docs`.
+  - Endpoint docs are added via JSDoc comments in route files, using `$ref: '#/components/schemas/SchemaName'`.
 
 ### Troubleshooting
 - If schemas show as `type: string`, ensure you are using Zod v3 and `zod-to-json-schema@3.x`.
