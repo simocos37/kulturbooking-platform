@@ -1,4 +1,4 @@
-:root{
+:root {
   /* Design tokens: purple, yellow, black */
   --kb-purple: #5b21b6;
   --kb-yellow: #facc15;
@@ -26,4 +26,17 @@ body {
   color: white;
   padding: .5rem 1rem;
   border-radius: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(91, 33, 182, 0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #4c1d95;
+  box-shadow: 0 4px 16px rgba(91, 33, 182, 0.16);
+}
+
+.text-kb-muted {
+  color: var(--kb-muted);
 }
