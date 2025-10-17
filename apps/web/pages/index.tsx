@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { fetchEvents, bookEvent } from '../utils/api';
+import { getEvents } from '../lib/api';
+import { bookEvent } from '../utils/api';
 import EventItem from '../components/EventItem';
 import type { Event } from '@kultur/types';
 
@@ -9,15 +10,14 @@ const HomePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchEvents()
-      .then((data) => {
-        setEvents(data);
-        setLoading(false);
+    setLoading(true);
+    getEvents()
+      .then(setEvents)
+      .catch(e => {
+        console.error(e);
+        setError(e.message);
       })
-      .catch((err) => {
-        setError(err.message || 'Failed to load events');
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, []);
 
   return (
