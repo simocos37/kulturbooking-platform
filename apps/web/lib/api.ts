@@ -3,7 +3,7 @@ export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
 
 export async function getEvents() {
     const base = API_BASE;
-    const url = `${base}/api/events`;
+    const url = `${base}/api/v1/events`;
     const res = await fetch(url);
     if (!res.ok) {
         const text = await res.text();
