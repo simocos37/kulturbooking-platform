@@ -87,6 +87,10 @@ app.use('/api/v1', (_req, res) => res.status(404).json({ error: 'API v1 route no
 app.use((_req, res) => res.status(404).json({ error: 'Not Found' }));
 
 const PORT = Number(process.env.PORT || 4000);
-app.listen(PORT, () => {
-  console.log(`KulturBooking API running on http://0.0.0.0:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`KulturBooking API running on http://0.0.0.0:${PORT}`);
+  });
+}
+
+export default app;

@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "ci:smoke-health",
+			"type": "shell",
+			"command": "curl -sf http://localhost:4000/health || exit 1",
+			"args": [],
+			"problemMatcher": [],
+			"group": "test"
+		}
+	]
+}
