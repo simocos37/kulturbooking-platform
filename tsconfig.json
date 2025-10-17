@@ -11,5 +11,10 @@
     "noEmit": true,
     "strict": false
   },
-  "include": ["apps/**/*", "packages/**/*", "node_modules/@prisma/client"]
+  "include": ["apps/**/*", "packages/**/*", "node_modules/@prisma/client"],
+  "exclude": [
+    "packages/api/src/__tests__",
+    "packages/types/__tests__",
+    "apps/web/__tests__"
+  ]
 }
