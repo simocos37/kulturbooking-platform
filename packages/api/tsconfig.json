@@ -13,7 +13,8 @@
     ]
   },
   "include": [
-    "src"
+    "src",
+    "src/__tests__"
   ],
   "exclude": [
     "node_modules",
