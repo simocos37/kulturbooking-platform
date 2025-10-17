@@ -8,6 +8,7 @@
     "start": "next start -p 3000"
   },
   "dependencies": {
+    "@kultur/types": "workspace:*",
     "autoprefixer": "^10.4.14",
     "axios": "^1.4.0",
     "leaflet": "^1.9.4",
@@ -16,10 +17,12 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-leaflet": "^4.1.0",
-    "tailwindcss": "^3.4.0",
-    "@kultur/types": "workspace:*"
+    "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^30.0.0",
     "@types/react": "19.1.14",
     "typescript": "^5.1.6"
   }
