@@ -13,12 +13,12 @@
     ]
   },
   "include": [
-    "src",
-    "src/__tests__"
+    "src"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "prisma"
+    "prisma",
+    "src/__tests__"
   ]
 }
