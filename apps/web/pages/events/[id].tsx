@@ -12,9 +12,9 @@ export default function EventPage() {
     useEffect(() => {
         if (!id) return;
         setLoading(true);
-        fetch(`${API_BASE}/api/v1/events`)
-            .then(r => r.json())
-            .then((list: Event[]) => list.find(e => e.id === id as string) ?? null)
+        fetch(`${API_BASE}/api/v1/events/${id}`)
+            .then(r => r.ok ? r.json() : null)
+            .then((event: Event | null) => event)
             .then(setEvent)
             .catch(console.error)
             .finally(() => setLoading(false));
