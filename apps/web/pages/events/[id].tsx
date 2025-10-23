@@ -7,7 +7,7 @@ export default function EventPage() {
     const router = useRouter();
     const { id } = router.query;
     const [event, setEvent] = useState<Event | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!id) return;
