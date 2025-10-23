@@ -35,10 +35,11 @@ export default function EventPage() {
                         if (response.ok) {
                             alert('Booking confirmed (no payment)');
                         } else {
-                            alert('Could not book');
+                            const text = await response.text().catch(() => '');
+                            alert('Could not book: ' + (text || response.statusText));
                         }
-                    } catch (err) {
-                        const errorMsg = err && err.message ? err.message : '';
+                    } catch (err: unknown) {
+                        const errorMsg = err && typeof err === 'object' && 'message' in err ? (err as any).message : '';
                         alert(`Booking failed${errorMsg ? `: ${errorMsg}` : ''}. Please check your connection and try again.`);
                     }
                 }}>Book</button>
