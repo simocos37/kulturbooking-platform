@@ -9,7 +9,7 @@ interface EventItemProps {
 }
 
 const EventItem: React.FC<EventItemProps> = ({ event, onBook }) => (
-  <li key={event.id} className="p-4 border rounded-lg shadow-sm hover:shadow-md transition" role="listitem" aria-label={`Event: ${event.title}`}
+  <li className="p-4 border rounded-lg shadow-sm hover:shadow-md transition" role="listitem" aria-label={`Event: ${event.title}`}
     style={{ background: '#fff', color: '#0f172a', borderColor: '#5b21b6' }}>
     <div className="flex justify-between items-start">
       <div>
