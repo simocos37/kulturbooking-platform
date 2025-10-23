@@ -37,7 +37,7 @@ export default function eventsRouter(prisma: PrismaClient) {
     res.json(events.map(toEvent));
   });
 
-  // GET /api/events/:id - single event lookup
+  // GET /api/v1/events/:id - single event lookup
   router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
