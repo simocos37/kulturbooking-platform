@@ -25,19 +25,51 @@ const prisma = new PrismaClient();
 app.use(bodyParser.json());
 
 // CORS configuration: allow origins defined in env var CORS_ORIGINS (comma-separated).
-// If not provided, allow '*' ONLY in development. In production, require explicit origins.
+// If not provided, allow '*' ONLY in development. In production, require explicit origins
+// unless ALLOW_VERCEL_PREVIEWS=true, in which case any *.vercel.app origin will be accepted.
 const rawOrigins = process.env.CORS_ORIGINS;
 const isDev = process.env.NODE_ENV !== 'production';
-let corsOrigins;
+const allowVercelPreviews = process.env.ALLOW_VERCEL_PREVIEWS === 'true';
+
+let allowedOrigins: string[] | '*';
 if (rawOrigins) {
-  corsOrigins = rawOrigins.split(',').map(s => s.trim());
+  allowedOrigins = rawOrigins.split(',').map(s => s.trim()).filter(Boolean);
 } else if (isDev) {
-  corsOrigins = '*';
+  allowedOrigins = '*';
   console.warn('[CORS] Allowing all origins (*) in development. Set CORS_ORIGINS for production!');
 } else {
-  throw new Error('CORS_ORIGINS env var must be set in production for security.');
+  if (!allowVercelPreviews) {
+    throw new Error('CORS_ORIGINS env var must be set in production for security.');
+  }
+  // If we reach here, ALLOW_VERCEL_PREVIEWS is true; we will allow vercel.app origins dynamically.
+  allowedOrigins = [];
 }
-app.use(cors({ origin: corsOrigins, credentials: true }));
+
+console.log('[CORS] allowedOrigins:', Array.isArray(allowedOrigins) ? allowedOrigins : allowedOrigins === '*' ? ['*'] : []);
+console.log('[CORS] allowVercelPreviews:', allowVercelPreviews);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow server-to-server or same-origin requests with no Origin header
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins === '*') return callback(null, true);
+
+    if (Array.isArray(allowedOrigins) && allowedOrigins.includes(origin)) return callback(null, true);
+
+    if (allowVercelPreviews) {
+      try {
+        const u = new URL(origin);
+        if (u.hostname.endsWith('.vercel.app')) return callback(null, true);
+      } catch (e) {
+        // invalid origin, fall through to deny
+      }
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 
 // Simple root endpoint so visiting the service base URL doesn't return 404
 app.get('/', (_req, res) => {

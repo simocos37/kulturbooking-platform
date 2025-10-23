@@ -40,3 +40,12 @@ body {
 .text-kb-muted {
   color: var(--kb-muted);
 }
+
+/* Nav tweaks */
+.nav-link {
+  color: var(--kb-muted);
+}
+
+.no-underline {
+  text-decoration: none;
+}
