@@ -37,6 +37,19 @@ export default function eventsRouter(prisma: PrismaClient) {
     res.json(events.map(toEvent));
   });
 
+  // GET /api/v1/events/:id - single event lookup
+  router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+      const event = await prisma.event.findUnique({ where: { id } });
+      if (!event) return res.status(404).json({ error: 'Event not found' });
+      return res.json(toEvent(event));
+    } catch (err: any) {
+      console.error('Error fetching event', err);
+      return sendError(res, 500, 'Could not fetch event');
+    }
+  });
+
   // POST /api/events  (protected by ADMIN_TOKEN for MVP)
   router.post('/', async (req, res) => {
     const adminToken = req.header(ADMIN_HEADER);
