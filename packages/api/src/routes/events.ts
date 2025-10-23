@@ -26,6 +26,7 @@ import { sendError } from '../utils/errorResponse';
 
 export default function eventsRouter(prisma: PrismaClient) {
   const router = Router();
+  const ADMIN_HEADER = 'x-admin-token';
 
   // GET /api/events
   router.get('/', async (_req, res) => {
@@ -36,14 +37,47 @@ export default function eventsRouter(prisma: PrismaClient) {
     res.json(events.map(toEvent));
   });
 
-  // POST /api/events  (minimal creation for MVP — normally protected)
+  // POST /api/events  (protected by ADMIN_TOKEN for MVP)
   router.post('/', async (req, res) => {
+    const adminToken = req.header(ADMIN_HEADER);
+    const serverToken = process.env.ADMIN_TOKEN;
+
+    if (!serverToken || adminToken !== serverToken) {
+      return sendError(res, 403, 'Forbidden: invalid admin token');
+    }
+
     const parseResult = EventCreateSchema.safeParse(req.body);
     if (!parseResult.success) {
       return sendError(res, 400, 'Invalid event input');
     }
-    const { title, description, startAt, lat, lng } = parseResult.data;
+    const { title, description, startAt, lat, lng, location } = parseResult.data;
+    if (!title || !startAt) return sendError(res, 400, 'title and startAt required');
+
     try {
+      // Resolve an existing user to use as organizer to satisfy FK constraint.
+      // Strategy: prefer explicit ADMIN_USER_EMAIL env var; otherwise find a user with role ADMIN or ORGANIZER.
+      let organizerId: string | null = null;
+      const adminEmail = process.env.ADMIN_USER_EMAIL;
+      if (adminEmail) {
+        const user = await prisma.user.findUnique({ where: { email: adminEmail } });
+        if (user) organizerId = user.id;
+      }
+
+      if (!organizerId) {
+        const user = await prisma.user.findFirst({ where: { role: 'ADMIN' } });
+        if (user) organizerId = user.id;
+      }
+
+      if (!organizerId) {
+        const user = await prisma.user.findFirst({ where: { role: 'ORGANIZER' } });
+        if (user) organizerId = user.id;
+      }
+
+      if (!organizerId) {
+        console.error('No organizer/admin user found when creating event');
+        return sendError(res, 500, 'No organizer/admin user found. Create an organizer user or set ADMIN_USER_EMAIL in the API env.');
+      }
+
       const event = await prisma.event.create({
         data: {
           title,
@@ -51,12 +85,13 @@ export default function eventsRouter(prisma: PrismaClient) {
           startAt: new Date(startAt),
           lat: lat ?? null,
           lng: lng ?? null,
-          organizerId: 'anon' // TODO: Replace with authenticated user ID when auth is implemented
+          location: location ?? null,
+          organizerId,
         }
       });
       res.json(event);
     } catch (err: any) {
-      console.error('Error creating event', err);
+      console.error('Create event failed', err);
       sendError(res, 500, 'Could not create event');
     }
   });

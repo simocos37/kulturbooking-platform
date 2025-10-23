@@ -8,6 +8,7 @@ export const EventCreateSchema = z.object({
   }),
   lat: z.number().optional(),
   lng: z.number().optional(),
+  location: z.string().optional(),
 });
 
 export type EventCreateInput = z.infer<typeof EventCreateSchema>;
