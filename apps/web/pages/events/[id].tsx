@@ -34,7 +34,8 @@ export default function EventPage() {
                         await fetch(`${API_BASE}/api/v1/bookings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ eventId: event.id }) });
                         alert('Booking confirmed (no payment)');
                     } catch (err) {
-                        alert('Could not book');
+                        const errorMsg = err && err.message ? err.message : '';
+                        alert(`Booking failed${errorMsg ? `: ${errorMsg}` : ''}. Please check your connection and try again.`);
                     }
                 }}>Book</button>
             </div>
